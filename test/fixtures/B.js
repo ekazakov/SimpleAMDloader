@@ -1,5 +1,5 @@
 'use strict'
 
-define('base/test/fixtures/B', [], function() {
+define('B', function() {
     return 'module B';
 });

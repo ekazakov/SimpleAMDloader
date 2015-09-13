@@ -2,7 +2,7 @@
 
 import defer from './defer.js';
 
-export default function loadScript (name, document, onLoad, onError) {
+export default function loadScript (url, document, onLoad, onError) {
     const deferred = defer();
     const element = document.createElement('script');
 
@@ -10,9 +10,9 @@ export default function loadScript (name, document, onLoad, onError) {
         async: true,
         onload: onLoad,
         onerror: onError || deferred.reject,
-        src: `./${name}.js`
+        src: url
     });
 
     document.body.appendChild(element);
-    return {name, deferred};
+    return deferred;
 }

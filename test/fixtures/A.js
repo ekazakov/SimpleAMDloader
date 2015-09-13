@@ -1,5 +1,5 @@
 'use strict'
-
-define('base/test/fixtures/A', [], function() {
+//console.log(document.currentScript.src);
+define('A', function() {
     return 'module A';
 });

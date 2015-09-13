@@ -20,6 +20,7 @@ module.exports = function(config) {
         files: [
             'test/index.js',
             {pattern: 'test/fixtures/**', included: false},
+            {pattern: 'test/somedir/**', included: false},
         ],
 
         preprocessors: {
