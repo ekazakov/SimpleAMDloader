@@ -49,13 +49,7 @@ export default class Loader {
                 this.modules[dependency] = this._require(deps, factory, errback, [dependency]);
             } else if (this._config.shim[dependency]) {
                 const shim = this._config.shim[dependency];
-
-                this.modules[dependency] = this._require(
-                    shim.deps || [],
-                    () => this.loadShim(dependency, shim, path),
-                    null,
-                    path
-                );
+                this.modules[dependency] = this.loadShim(dependency, shim, path);
             } else if (!this.modules[dependency]) {
                 this.modules[dependency] = this.loadScript(dependency, path);
             }
@@ -120,19 +114,25 @@ export default class Loader {
     }
 
     loadShim (dependency, shim, path) {
+        let deferred;
         const onLoad = () => deferred.resolve();
         const onError = () => {
-            delete this.pendingModules[dependency];
             deferred.reject(new Error(`Error while loading module ${dependency}`))
         };
-        const deferred = loadScript(this.toUrl(dependency), this.document, onLoad, onError);
 
-        deferred.path = path.concat(dependency);
-        this.pendingModules[dependency] = deferred;
-
-        return deferred.promise.then(() => {
-            const view = this.document.defaultView;
-            return eval(`(view.${shim.exports})`)
+        return new Promise((resolve, reject) => {
+            this._require(
+                shim.deps || [],
+                () => {
+                    deferred = loadScript(this.toUrl(dependency), this.document, onLoad, onError)
+                    deferred.promise.then(() => {
+                        const view = this.document.defaultView;
+                        return eval(`(view.${shim.exports})`)
+                    }).then(resolve, reject);
+                },
+                null,
+                path.concat([dependency])
+            ).catch(reject);
         });
     }
 };

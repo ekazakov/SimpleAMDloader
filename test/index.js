@@ -98,7 +98,6 @@ describe('Spec', () => {
         const define = loader.define;
 
         define('A', ['B'], (b) => `module A and ${b}`);
-        //define('B', () => 'module B');
         setTimeout(() => define('B', () => 'module B'), 10);
         setTimeout(() => {
             loader.require(['A'],
@@ -166,7 +165,9 @@ describe('Spec', () => {
                 expect(frame.contentWindow.bar).to.equal(2);
                 done();
             },
-            (err) => done(err));
+            (err) => {
+                done(err);
+            });
     });
 
     afterEach(() => {
